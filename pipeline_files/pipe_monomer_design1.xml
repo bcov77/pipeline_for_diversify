@@ -1,0 +1,101 @@
+<ROSETTASCRIPTS>
+
+<SCOREFXNS>
+    <ScoreFunction name="sfxn_std"  weights="beta_nov15.wts">
+        <Reweight scoretype="aa_composition" weight="1.0" />
+        <Reweight scoretype="p_aa_pp" weight="0.8" /> #from 0.6
+        <Reweight scoretype="coordinate_constraint" weight="1.0" />
+    </ScoreFunction>
+    <ScoreFunction name="nov15_ala"  weights="beta_nov15.wts">
+        <Reweight scoretype="aa_composition" weight="1.0" />
+        <Reweight scoretype="p_aa_pp" weight="0.7" /> #from 0.6
+        <Reweight scoretype="coordinate_constraint" weight="1.0" />
+    </ScoreFunction>
+    <ScoreFunction name="nov15"  weights="beta_nov15.wts">
+    </ScoreFunction>
+</SCOREFXNS>
+
+<RESIDUE_SELECTORS>
+    <ResidueName name="nonala" residue_name3="CYS,ASP,GLU,PHE,GLY,HIS,ILE,LYS,LEU,MET,ASN,PRO,GLN,ARG,SER,THR,VAL,TRP,TYR"/>
+    <Index name="design_res" resnums="%%design_res%%" error_on_out_of_bounds_index="false"/>
+    <Not name="not_design_res" selector="design_res" />
+
+    <ResiduePDBInfoHasLabel name="RIF_Res" property="RIFRES" />
+</RESIDUE_SELECTORS>
+
+<TASKOPERATIONS>
+    <LayerDesign name="ala_layer" layer="core_boundary_surface" use_sidechain_neighbors="True" pore_radius="2.0" verbose="False" core="3.7" surface="1.3" >
+        <core>
+            <all append="AV"/>
+            <all exclude="DEFGHIKLMNPQRSTWY" />
+        </core>
+        <boundary>
+            <all append=" AV" />
+            <all exclude="DEFGHIKLMNPQRSTWY" />
+        </boundary>
+        <surface>
+            <all append="AV" />
+            <all exclude="DEFGHIKLMNPQRSTWY" />
+        </surface>
+    </LayerDesign>
+    <OperateOnResidueSubset name="AlaOnly" selector="nonala">
+        <RestrictToRepackingRLT/>
+    </OperateOnResidueSubset>
+
+    <OperateOnResidueSubset name="restrict_else" selector="not_design_res">
+        <RestrictToRepackingRLT/>
+    </OperateOnResidueSubset>
+
+    <OperateOnResidueSubset name="fix_RIFRES" selector="RIF_Res">
+        <PreventRepackingRLT/>
+    </OperateOnResidueSubset>
+    <InitializeFromCommandline name="init"/>
+</TASKOPERATIONS>
+
+<FILTERS>   
+    <AverageDegree name="degree" confidence="0" threshold="9.5"/>
+    <ResidueCount name="res_count_all" max_residue_count="9999" confidence="0"/>
+    <ScoreType name="total_score" scorefxn="nov15" threshold="0"/>
+    <SSShapeComplementarity name="ss_sc" verbose="0" confidence="0" min_sc="0.70"/>
+    <SSPrediction name="mismatch_probability" confidence="0" cmd="/software/psipred4/runpsipred_single" use_probability="1" mismatch_probability="1" use_svm="0" threshold="0.175"/>
+    <CalculatorFilter name="score_per_res" equation="total_score / res" threshold="-3.5" confidence="0">
+        <Var name="total_score" filter="total_score"/>
+        <Var name="res" filter="res_count_all"/>
+    </CalculatorFilter>
+    <ResidueCount name="AlaCount" residue_types="ALA" max_residue_count="6" confidence="0"/>
+
+
+    <BuriedUnsatHbonds name="unsat_hbond" use_reporter_behavior="true" report_all_heavy_atom_unsats="true" scorefxn="sfxn_std" residue_surface_cutoff="15.0" ignore_surface_res="true" confidence="0" jump_number="0" cutoff="5"/>
+</FILTERS>
+
+<TASKOPERATIONS>
+    <LimitAromaChi2 name="limitchi2" include_trp="1" />
+    <LayerDesign name="layer_all" layer="core_boundary_surface_Nterm_Cterm" use_sidechain_neighbors="True" pore_radius="2.0" verbose="False" core="3.5" surface="1.5" />
+</TASKOPERATIONS>
+
+<MOVERS>
+    <FastDesign name="fastdes" task_operations="limitchi2,layer_all,restrict_else,fix_RIFRES,init" scorefxn="sfxn_std" clear_designable_residues="0" repeats="3" ramp_down_constraints="0" />
+    <FastDesign name="testala" task_operations="limitchi2,ala_layer,AlaOnly,restrict_else,fix_RIFRES,init" scorefxn="nov15_ala" clear_designable_residues="0" repeats="1" ramp_down_constraints="0" />
+
+    <VirtualRoot name="add_virt" removable="true" remove="false" />
+    <VirtualRoot name="remove_virt" removable="true" remove="true" />
+    <AtomCoordinateCstMover name="add_coordinate_cst"  />
+    <ClearConstraintsMover name="remove_cst" />
+
+</MOVERS>
+
+
+<PROTOCOLS>
+    <Add mover_name="add_virt"/>
+    <Add mover_name="add_coordinate_cst"/>
+    <Add mover_name="fastdes"/>
+    <Add mover_name="testala"/>
+    <Add mover_name="remove_cst"/>
+    <Add mover_name="remove_virt"/>
+    <Add filter_name="AlaCount" />
+    <Add filter_name="ss_sc" />
+    <Add filter_name="score_per_res" />
+    <Add filter_name="mismatch_probability" />
+</PROTOCOLS>
+
+</ROSETTASCRIPTS>

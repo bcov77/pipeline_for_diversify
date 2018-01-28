@@ -1,0 +1,38 @@
+
+
+the_chooser:
+    BatchSize: 1
+    Executable: pipeline_files/pipe_the_chooser.py
+    CpuRequest: 1
+    MaxMinutes: 1
+
+diversify_rifdock:
+    BatchSize: 1
+    Executable: pipeline_files/rif_wrapper.sh
+    CpuRequest: 10
+    MaxMinutes: 45
+
+stabilization_setup:
+    BatchSize: 1    #more
+    Executable: pipeline_files/pipe_stabilization_setup.py
+    CpuRequest: 1
+    MaxMinutes: 3
+
+monomer_stabilize:
+    BatchSize: 1
+    Executable: pipeline_files/monomer_stabilize_wrapper.sh
+    CpuRequest: 1
+    MaxMinutes: 8
+
+after_stabilization:
+    BatchSize: 1    #more
+    Executable: pipeline_files/pipe_after_stabilization.py
+    CpuRequest: 1
+    MaxMinutes: 3
+
+ppi_design:
+    BatchSize: 1 
+    Executable: pipeline_files/ppi_wrapper.sh
+    CpuRequest: 1
+    MaxMinutes: 20
+

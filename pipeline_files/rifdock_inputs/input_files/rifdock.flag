@@ -15,6 +15,7 @@
 -rif_dock:target_rif            rifgen_4HQF/rif_64_4HQF_sca0.7_noKR.rif.gz
 -rif_dock:extra_rotamers        0
 -rif_dock:extra_rif_rotamers    1
+-rif_dock:rot_spec_fname /home/bcov/sc/random/old_rif_rotamer_index_spec.txt
 #################################################################################################################
 
 
@@ -61,7 +62,7 @@
 -rif_dock:replace_all_with_ala_1bre true
 
 
--rif_dock:full_scaffold_output
+-rif_dock:output_full_scaffold
 
 
 -rif_dock:hbond_weight 1.0
@@ -144,7 +145,7 @@
 -detect_disulf 0
 
 #-database /home/longxing/Will_database_for_rifgen/database_for_rif4.2
--database /home/bcov/rifdock/main/database
+-database ../../rifdock_database
 
 
 -rif_dock:target_rf_oversample 2

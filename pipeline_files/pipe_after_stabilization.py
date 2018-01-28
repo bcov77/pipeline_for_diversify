@@ -90,8 +90,11 @@ def close_atomic(handle, filename):
 
 
 f = open_atomic(output_file)
-for created_pdb in created_pdbs:
-    f.write("%s\n"%(created_pdb))
+if (len(created_pdbs) > 0):
+    for created_pdb in created_pdbs:
+        f.write("%s\n"%(created_pdb))
+else:
+    f.write("-")
 close_atomic(f, output_file)
 
 

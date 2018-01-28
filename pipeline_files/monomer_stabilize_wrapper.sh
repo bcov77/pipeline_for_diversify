@@ -6,7 +6,7 @@ cd $2
 
 
 
-#./command.sh
+./command.sh > monomer.log 2>&1
 
 a=$?
 echo $a > signal.log

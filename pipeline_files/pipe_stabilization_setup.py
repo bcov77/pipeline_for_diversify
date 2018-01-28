@@ -130,7 +130,8 @@ for in_fol in in_fols:
         if (os.path.exists(fol)):
             print name + " exists!!!"
             continue
-        os.mkdir(fol)
+        else:
+            os.mkdir(fol)
 
         created_folders.append(fol)
 
@@ -224,8 +225,11 @@ def close_atomic(handle, filename):
 
 
 f = open_atomic(output_file)
-for directory in created_folders:
-    f.write("%s\n"%(directory))
+if (len(created_folders) > 0):
+    for directory in created_folders:
+        f.write("%s\n"%(directory))
+else:
+    f.write("-")
 close_atomic(f, output_file)
 
 

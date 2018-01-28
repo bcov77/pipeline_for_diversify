@@ -198,12 +198,13 @@ for these_three, ss0, ss1, ss2 in good_motifs:
         if (os.path.exists(this_fol)):
             print "%s exists"%this_name
             continue
+        else:
+            os.mkdir(this_fol)
 
         created_directories.append(this_fol)
 
-        os.mkdir(this_fol)
 
-        cmd("cp -r pipeline_files/rifdock_inputs/input_files %s"%this_fol)
+        cmd("cp pipeline_files/rifdock_inputs/input_files/* %s"%this_fol)
         rifgen = cmd("readlink -f pipeline_files/rifdock_inputs/rifgen_*").strip()
         rifgen_base = os.path.basename(rifgen)
         cmd("ln -s %s %s"%(rifgen, os.path.join(this_fol, rifgen_base)))
@@ -229,7 +230,7 @@ for these_three, ss0, ss1, ss2 in good_motifs:
             f.write("-high_cut_site %i\n"%(end-1))
             f.write("-use_parent_body_energies true\n")
             f.write("-include_parent\n")
-            f.write("-max_beam_multiplier 10000\n")
+            f.write("-max_beam_multiplier 100\n")
 
         f.close()
 
@@ -250,8 +251,11 @@ def close_atomic(handle, filename):
 
 
 f = open_atomic(output_file)
-for directory in created_directories:
-    f.write("%s\n"%(directory))
+if (len(created_directories) > 0):
+    for directory in created_directories:
+        f.write("%s\n"%(directory))
+else:
+    f.write("-")
 close_atomic(f, output_file)
 
 

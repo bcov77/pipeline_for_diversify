@@ -76,7 +76,7 @@ subset = to_modify.apply(dock)
 monomer_size = dock.split_by_chain()[1].size()
 assert(monomer_size == scaffold.size())
 
-to_remove = [1, monomer_size - 1]
+to_remove = [1, monomer_size - 1, monomer_size]
 
 for item in to_remove:
     subset[item] = False

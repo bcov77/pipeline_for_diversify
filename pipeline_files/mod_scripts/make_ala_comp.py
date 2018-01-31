@@ -14,7 +14,7 @@ def cmd(command, wait=True):
     return the_stuff[0] + the_stuff[1]
 
 
-num_alanines = int(cmd("pdb2fasta %s | head -n 2 | tail -n 1 | tr -cd 'A' | wc -c"%sys.argv[1]).strip())
+num_alanines = int(cmd("zgrep 'ATOM.*CA.*ALA.* A ' %s | wc -l"%sys.argv[1]).strip())
 
 f = open("ala.comp", 'w')
 f.write('PENALTY_DEFINITION\n')

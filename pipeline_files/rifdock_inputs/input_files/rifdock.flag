@@ -39,7 +39,7 @@
 -score:weights beta_soft
 -add_orbitals false
 
-
+-favorable_1body_multiplier 0
 
 ################ stuff related to picking designable and fixed positions #################
 

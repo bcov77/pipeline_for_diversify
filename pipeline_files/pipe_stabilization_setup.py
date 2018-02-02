@@ -19,7 +19,7 @@ from pyrosetta.rosetta import *
 init("-mute all")
 
 xml = "pipeline_files/pipe_monomer_design1.xml"
-designs_to_grab = 3
+designs_to_grab = 30
 
 out_fol = "monomer_stabilize" #sys.argv[1]
 output_file = sys.argv[1]
@@ -89,23 +89,16 @@ for in_fol in in_fols:
         if (len(good_lines) == designs_to_grab):
             break
 
-    ctrl = False
-    matches = re.match(".*?([0-9]{2})-([0-9]{2})", in_fol)
-    try:
-        cut_low = int(matches.group(1))
-        cut_high = int(matches.group(2))
-    except:
-        assert("ctrl" in in_fol)
-        ctrl = True
-        cut_low = 5
-        cut_high = 6
+    ctrl = "ctrl" in in_fol
+
 
 
     score_file = os.path.join(score_fol, in_fol_base + ".dok")
     g = open(score_file, "w")
 
 
-    range_sel = core.select.residue_selector.ResidueIndexSelector("%i-%i"%(cut_low, cut_high))
+    # range_sel = core.select.residue_selector.ResidueIndexSelector("%i-%i"%(cut_low, cut_high))
+    range_sel = core.select.residue_selector.ResiduePDBInfoHasLabelSelector("FRAGMENT")
     neighbors = core.select.residue_selector.NeighborhoodResidueSelector(range_sel, 7, True)
 
     layers = core.select.residue_selector.LayerSelector()

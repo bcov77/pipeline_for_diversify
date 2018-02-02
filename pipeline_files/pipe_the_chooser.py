@@ -136,7 +136,7 @@ for i in range(len(ss_elements)):
 
 created_directories = []
 
-for these_three, ss0, ss1, ss2 in good_motifs:
+for these_three, ss0, ss1, ss2 in good_motifs + [["XXX", "", "", ""]]:
     starts = []
 
     if (these_three[0] == "E"):
@@ -182,59 +182,76 @@ for these_three, ss0, ss1, ss2 in good_motifs:
         except:
             pass
 
+    if (these_three == "XXX"):
+        starts = [-1, -1]
+        ends = [-1, -1]
+
+    earliest_start = min(starts)
+    latest_end = max(ends)
+    extra_name = "_%02i-%02i"%(earliest_start, latest_end)
+
+###################
+    if (earliest_start == -1):
+        extra_name = "_ctrl_"
 
 
-    print these_three
-    for start, end in list(itertools.product(use_starts, use_ends)) + [(-1, -1)]:
-        print "select resi " + "+".join(str(x) for x in range(start, end+1))
+    this_name = dock_base + extra_name
 
-        extra_name = "_%02i-%02i"%(start, end)
-        if (start == -1):
-            extra_name = "_ctrl_"
+    this_fol = os.path.join(output_folder, this_name)
+    if (os.path.exists(this_fol)):
+        print "%s exists"%this_name
+        continue
+    else:
+        os.mkdir(this_fol)
 
-        this_name = dock_base + extra_name
-
-        this_fol = os.path.join(output_folder, this_name)
-        if (os.path.exists(this_fol)):
-            print "%s exists"%this_name
-            continue
-        else:
-            os.mkdir(this_fol)
-
-        created_directories.append(this_fol)
+    created_directories.append(this_fol)
 
 
-        cmd("cp pipeline_files/rifdock_inputs/input_files/* %s"%this_fol)
-        rifgen = cmd("readlink -f pipeline_files/rifdock_inputs/rifgen_*").strip()
-        rifgen_base = os.path.basename(rifgen)
-        cmd("ln -s %s %s"%(rifgen, os.path.join(this_fol, rifgen_base)))
+    cmd("cp pipeline_files/rifdock_inputs/input_files/* %s"%this_fol)
+    rifgen = cmd("readlink -f pipeline_files/rifdock_inputs/rifgen_*").strip()
+    assert(len(rifgen) > 0)
+    rifgen_base = os.path.basename(rifgen)
+    cmd("ln -s %s %s"%(rifgen, os.path.join(this_fol, rifgen_base)))
 
-        scaffold_name = dock_base + "_og.pdb"
+    scaffold_name = dock_base + "_og.pdb"
 
-        f = open(os.path.join(this_fol, "morph.flag"), "w")
-        f.write("-tether_to_input_position 5\n")
-        f.write("-scaffolds %s\n"%scaffold_name)
-        if (start != -1):
-            f.write("-scaff_search_mode morph_dive_pop\n")
-            f.write("-max_insertion 0\n")
-            f.write("-max_deletion 0\n")
-            f.write("-indexed_structure_store:fragment_store /home/bcov/from/alex/vall.h5\n")
-            f.write("-fragment_cluster_tolerance 0.2\n")
-            f.write("-max_structures 100\n")
-            f.write("-fragment_max_rmsd 4\n")
-            f.write("-match_this_rmsd 7\n")
-            f.write("-dive_resl 6\n")
-            f.write("-pop_resl 5\n")
-            f.write("-match_this_pdb %s\n"%scaffold_name)
-            f.write("-low_cut_site %i\n"%(start+1))
-            f.write("-high_cut_site %i\n"%(end-1))
-            f.write("-use_parent_body_energies true\n")
-            f.write("-include_parent\n")
-            f.write("-max_beam_multiplier 100\n")
+    f = open(os.path.join(this_fol, "morph.flag"), "w")
+    f.write("-tether_to_input_position 5\n")
+    f.write("-scaffolds %s\n"%scaffold_name)
+    if (earliest_start != -1):
+        f.write("-scaff_search_mode morph_dive_pop\n")
+        f.write("-max_insertion 0\n")
+        f.write("-max_deletion 0\n")
+        f.write("-indexed_structure_store:fragment_store /home/bcov/from/alex/vall.h5\n")
+        f.write("-fragment_cluster_tolerance 0.2\n")
+        f.write("-max_fragments 100\n")
+        f.write("-fragment_max_rmsd 4\n")
+        f.write("-match_this_rmsd 2\n")
+        f.write("-dive_resl 6\n")
+        f.write("-pop_resl 5\n")
+        f.write("-match_this_pdb %s\n"%scaffold_name)
+        f.write("-low_cut_site %i\n"%(earliest_start+1))
+        f.write("-high_cut_site %i\n"%(latest_end-1))
+        f.write("-use_parent_body_energies true\n")
+        f.write("-include_parent\n")
+        f.write("-max_beam_multiplier 1000000\n")
+        f.write("-morph_rules_files binder.morph_rules\n")
+
+    f.close()
+
+    scaffold.dump_pdb(os.path.join(this_fol, scaffold_name))
+
+
+    if (earliest_start != -1):
+        f = open(os.path.join(this_fol, "binder.morph_rules"), "w")
+
+
+        for start, end in list(itertools.product(use_starts, use_ends)):
+            print "select resi " + "+".join(str(x) for x in range(start, end+1))
+            f.write("S: %s %s 0 0 100\n"%(start+1, end-1))
 
         f.close()
 
-        scaffold.dump_pdb(os.path.join(this_fol, scaffold_name))
 
 
 def make_temp_filename(filename):

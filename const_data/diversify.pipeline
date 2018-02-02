@@ -13,19 +13,19 @@ diversify_rifdock:
     MaxMinutes: 120
 
 stabilization_setup:
-    BatchSize: 15    #more
+    BatchSize: 45    #more
     Executable: pipeline_files/python_wrapper.sh pipeline_files/pipe_stabilization_setup.py
     CpuRequest: 1
-    MaxMinutes: 48
+    MaxMinutes: 8
 
 monomer_stabilize:
     BatchSize: 1
     Executable: pipeline_files/monomer_stabilize_wrapper.sh
     CpuRequest: 1
-    MaxMinutes: 16
+    MaxMinutes: 48
 
 after_stabilization:
-    BatchSize: 15    #more
+    BatchSize: 45    #more
     Executable: pipeline_files/python_wrapper.sh pipeline_files/pipe_after_stabilization.py
     CpuRequest: 1
     MaxMinutes: 8

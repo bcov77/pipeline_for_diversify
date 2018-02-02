@@ -3,11 +3,7 @@
 og_pwd=$(pwd)
 cd $2
 
-rif_dock="/home/bcov/rifdock/scheme/build/apps/rosetta/rif_dock_test"
-
-if [ ! -f "$rif_dock" ]; then
-    rif_dock="/suppscr/baker/bcov/rifdock/scheme/build/apps/rosetta/rif_dock_test"
-fi
+rif_dock=$(readlink -f rif_dock_test)
 
 $rif_dock @rifdock.flag @morph.flag > phase2.log 2>&1
 

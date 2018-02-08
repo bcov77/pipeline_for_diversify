@@ -57,7 +57,6 @@
     <ResidueCount name="res_count_all" max_residue_count="9999" confidence="0"/>
     <ScoreType name="total_score" scorefxn="nov15" threshold="0"/>
     <SSShapeComplementarity name="ss_sc" verbose="0" confidence="0" min_sc="0.70"/>
-    <SSPrediction name="mismatch_probability" confidence="0" cmd="/software/psipred4/runpsipred_single" use_probability="1" mismatch_probability="1" use_svm="0" threshold="0.175"/>
     <CalculatorFilter name="score_per_res" equation="total_score / res" threshold="-3.5" confidence="0">
         <Var name="total_score" filter="total_score"/>
         <Var name="res" filter="res_count_all"/>
@@ -95,7 +94,6 @@
     <Add filter_name="AlaCount" />
     <Add filter_name="ss_sc" />
     <Add filter_name="score_per_res" />
-    <Add filter_name="mismatch_probability" />
 </PROTOCOLS>
 
 </ROSETTASCRIPTS>

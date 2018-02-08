@@ -13,6 +13,7 @@ init("-mute all")
 
 output_file = sys.argv[1]
 the_dock = sys.argv[2]
+fragments = int(sys.argv[3])
 # the_scaffold = sys.argv[2]
 output_folder = "docks"
 
@@ -224,7 +225,7 @@ for these_three, ss0, ss1, ss2 in good_motifs + [["XXX", "", "", ""]]:
         f.write("-max_deletion 0\n")
         f.write("-indexed_structure_store:fragment_store /home/bcov/from/alex/vall.h5\n")
         f.write("-fragment_cluster_tolerance 0.2\n")
-        f.write("-max_fragments 100\n")
+        f.write("-max_fragments %i\n"%fragments)
         f.write("-fragment_max_rmsd 4\n")
         f.write("-match_this_rmsd 2\n")
         f.write("-dive_resl 6\n")
@@ -248,10 +249,11 @@ for these_three, ss0, ss1, ss2 in good_motifs + [["XXX", "", "", ""]]:
 
         for start, end in list(itertools.product(use_starts, use_ends)):
             print "select resi " + "+".join(str(x) for x in range(start, end+1))
-            f.write("S: %s %s 0 0 100\n"%(start+1, end-1))
+            f.write("S: %i %i 0 0 %i\n"%(start+1, end-1, fragments))
 
         f.close()
-
+    
+    cmd("sed -i 's^/home/bcov^/suppscr/baker/bcov^g' %s"%os.path.join(this_fol, "*.flag"))
 
 
 def make_temp_filename(filename):

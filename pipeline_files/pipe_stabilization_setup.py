@@ -108,7 +108,7 @@ for in_fol in in_fols:
     design_sel = core.select.residue_selector.OrResidueSelector(restricted_neighbors, range_sel)
 
     for desno in range(min(designs_to_grab, len(good_lines))):
-        name = in_fol_base + "_%i"%desno
+        name = in_fol_base + "_%03i"%desno
         fol = os.path.join(out_fol, name)
 
         dok = good_lines[desno]
@@ -179,6 +179,12 @@ for in_fol in in_fols:
         gen_name = fol + "/command.sh"
         f = open(gen_name, "w")
 
+        rosetta_scripts = cmd("readlink -f rosetta").strip()
+        assert(len(rosetta_scripts) > 0)
+        database = cmd("readlink -f database").strip()
+        assert(len(database) > 0)
+
+
         f.write("#!/bin/bash\n")
         # f.write("#SBATCH -p medium\n")
         f.write("#SBATCH --mem=5g\n")
@@ -187,8 +193,8 @@ for in_fol in in_fols:
         f.write("#SBATCH -N 1\n")
         f.write("cd %s\n"%full_fol)
         # f.write("/home/bcov/rifdock/scheme/build/apps/rosetta/rif_dock_test @rifdock_v4.flags -scaffolds $1 > phase2.log\n")
-        f.write("/software/rosetta/latest/bin/rosetta_scripts -ex1 -ex2aro -s %s -aa_composition_setup_file ala.comp -parser:protocol %s -parser:script_vars design_res=$(cat to_design.list) > command.log\n"
-            %(monomer_name, xml))
+        f.write("%s -ex1 -ex2aro -s %s -aa_composition_setup_file ala.comp -parser:protocol %s -parser:script_vars design_res=$(cat to_design.list) -database %s > command.log 2>&1\n"
+            %(rosetta_scripts, monomer_name, xml, database))
 
         f.close()
 

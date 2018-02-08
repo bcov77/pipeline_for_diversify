@@ -2,3 +2,4 @@ database
 rifdock_database
 rif_dock_test
 rosetta
+pipeline_files/rifdock_inputs/rifgen_*

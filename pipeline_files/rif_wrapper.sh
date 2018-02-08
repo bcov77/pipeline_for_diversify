@@ -1,9 +1,11 @@
 #!/bin/bash
 
+
+rif_dock=$(readlink -f rif_dock_test)
+
 og_pwd=$(pwd)
 cd $2
 
-rif_dock=$(readlink -f rif_dock_test)
 
 $rif_dock @rifdock.flag @morph.flag > phase2.log 2>&1
 

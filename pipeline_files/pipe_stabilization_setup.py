@@ -108,7 +108,7 @@ for in_fol in in_fols:
     design_sel = core.select.residue_selector.OrResidueSelector(restricted_neighbors, range_sel)
 
     for desno in range(min(designs_to_grab, len(good_lines))):
-        name = in_fol_base + "_%i"%desno
+        name = in_fol_base + "_%03i"%desno
         fol = os.path.join(out_fol, name)
 
         dok = good_lines[desno]
